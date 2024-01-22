@@ -3,12 +3,12 @@
 # https://www.playframework.com/documentation/latest/ScalaRouting
 # ~~~~
 
-GET     /api/echo                       controllers.EchoController.index()
-PATCH   /api/echo                       controllers.EchoController.index()
-POST    /api/echo                       controllers.EchoController.index()
-PUT     /api/echo                       controllers.EchoController.index()
-DELETE  /api/echo                       controllers.EchoController.index()
-HEAD    /api/echo                       controllers.EchoController.index()
+GET     /api/:userId/echo           controllers.EchoController.index(userId)
+PATCH   /api/:userId/echo           controllers.EchoController.index(userId)
+POST    /api/:userId/echo           controllers.EchoController.index(userId)
+PUT     /api/:userId/echo           controllers.EchoController.index(userId)
+DELETE  /api/:userId/echo           controllers.EchoController.index(userId)
+HEAD    /api/:userId/echo           controllers.EchoController.index(userId)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

@@ -10,8 +10,9 @@ import play.api.http.ContentTypes
 @Singleton
 class EchoController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
 
-  def index() = Action { implicit request: Request[AnyContent] =>
+  def index(userId: String) = Action { implicit request: Request[AnyContent] =>
     val json = Json.obj(
+      "user" -> userId,
       "date" -> new Date().toInstant().toString(),
       "method" -> request.method,
       "uri" -> request.uri,
