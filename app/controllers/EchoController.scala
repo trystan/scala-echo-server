@@ -5,19 +5,20 @@ import play.api._
 import play.api.mvc._
 import play.api.libs.json.Json
 import java.util.Date
+import play.api.http.ContentTypes
 
 @Singleton
 class EchoController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
 
   def index() = Action { implicit request: Request[AnyContent] =>
-    val headers = request.headers.toMap
-    val body = request.body.asText
-    val now = new Date()
-    Ok(Json.obj(
+    val json = Json.obj(
+      "date" -> new Date().toInstant().toString(),
       "method" -> request.method,
       "uri" -> request.uri,
-      "headers" -> Json.toJsObject(headers), 
-      "body" -> body.getOrElse(null),
-      "date" -> now.toInstant().toString()))
+      "query" -> Json.toJsObject(request.queryString),
+      "headers" -> Json.toJsObject(request.headers.toMap), 
+      "body" -> request.body.asText.getOrElse(null))
+
+    Ok(json)
   }
 }
