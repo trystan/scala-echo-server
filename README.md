@@ -16,7 +16,7 @@ A sample project to play around with some things I want to learn more about.
   * `GET /api/:userId/history` to see your requests
   > I wasn't able to get the application lifecycle hooks to work so it doesn't set the ttl indexes on start and close the MongoClient on app close like I would prefer. I gave up after trying several different ways to do it that didn't work. 🤷‍♂️
 
-[-] Add stats for each user
+[✔] Add stats for each user
   * `GET /api/:userId/stats` to see your total stats
 
 [-] Refactor to microservices or lambdas

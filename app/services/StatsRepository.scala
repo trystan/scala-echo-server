@@ -7,21 +7,23 @@ import com.mongodb.{ServerApi, ServerApiVersion}
 import org.mongodb.scala.{ConnectionString, MongoClient, MongoClientSettings}
 import org.mongodb.scala.bson.Document
 import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.Updates._
 import com.mongodb.client.result.InsertOneResult
 import scala.concurrent.ExecutionContext
 import org.mongodb.scala.model.Indexes
 import org.mongodb.scala.model.IndexOptions
 import java.util.concurrent.TimeUnit
+import org.mongodb.scala.model.FindOneAndUpdateOptions
 
-class HistoryRepository {
+class StatsRepository {
   private val mongo = MongoClient("mongodb://localhost:27017")
   
   private def toJson(doc: Document): JsObject = { Json.parse(doc.toJson()).as[JsObject] - "_id" }
 
   private def ensureIndexesExist()(implicit ec: ExecutionContext) = {
     mongo.getDatabase("echo-server")
-        .getCollection("echos")
-        .createIndex(Indexes.ascending("userId"), IndexOptions().expireAfter(1, TimeUnit.DAYS))
+        .getCollection("stats")
+        .createIndex(Indexes.ascending("userId"))
         .toFuture()
   }
 
@@ -33,21 +35,25 @@ class HistoryRepository {
     mongo.close()
   }
 
-  def getRequestHistory(userId: String)(implicit ec: ExecutionContext): Future[Seq[JsValue]] = {
+  def getStats(userId: String)(implicit ec: ExecutionContext): Future[Option[JsValue]] = {
     mongo.getDatabase("echo-server")
-      .getCollection("echos")
+      .getCollection("stats")
       .find(equal("userId", userId))
+      .first()
       .toFuture()
-      .map(docs => docs.map(toJson))
+      .map(doc => Option(doc).map(toJson))
   }
   
-  // TODO: return something other than InsertOneResult; no need to expose which db we're using
-  def saveRequestDetails(userId: String, json: JsObject)(implicit ec: ExecutionContext): Future[InsertOneResult] = {
+  def saveRequestDetails(userId: String, json: JsObject)(implicit ec: ExecutionContext): Future[Option[JsObject]] = {
     val toInsert = json + ("userId" -> JsString(userId))
 
     mongo.getDatabase("echo-server")
-        .getCollection("echos")
-        .insertOne(Document.apply(toInsert.toString()))
+        .getCollection("stats")
+        .findOneAndUpdate(
+          equal("userId", userId), 
+          inc("requestCount", 1),
+          FindOneAndUpdateOptions().upsert(true))
         .toFuture()
+        .map(doc => Option(doc).map(toJson))
   }
 }
