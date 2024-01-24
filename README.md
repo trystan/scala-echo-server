@@ -1,6 +1,6 @@
 # scala-echo-server
 
-A sample project to play around with some things I want to learn more about.
+A sample project to play around with some things I want to learn more about. Basically, hello world with extra steps.
 
 ## Roadmap
 

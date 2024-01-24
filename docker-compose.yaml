@@ -1,4 +1,9 @@
-version: '3.4'
+version: '3.8'
+
+networks:
+  localstack-net:
+    name: localstack-net
+    driver: bridge
 
 services:
   mongodb:
@@ -9,3 +14,18 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=test
     ports:
       - "27014:27017"
+      
+  localstack:
+    image: localstack/localstack
+    privileged: true
+    networks:
+      - localstack-net
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    environment:
+      - DEBUG=1
+      - DATA_DIR=/tmp/localstack/data
+      - SERVICES=sqs,sns
+    volumes:
+      - ./.temp/localstack:/tmp/localstack
